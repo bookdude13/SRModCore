@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SRModCore
 {
-    public class MelonLoggerWrapper : ILogger
+    public class MelonLoggerWrapper : SRLogger
     {
         private readonly MelonLogger.Instance melonLogger;
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SRModCore
 {
-    public interface ILogger
+    public interface SRLogger
     {
         void Msg(string message);
         void Error(string message);
