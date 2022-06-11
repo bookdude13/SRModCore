@@ -205,12 +205,11 @@ namespace SRModCore
             }
         }
 
-        public static Sprite CreateSpriteFromAssemblyResource(SRLogger logger, string path)
+        public static Sprite CreateSpriteFromAssemblyResource(SRLogger logger, Assembly assemblyWithSpriteResource, string path)
         {
             try
             {
-                Assembly assembly = Assembly.GetExecutingAssembly();
-                Stream binStream = assembly.GetManifestResourceStream(path);
+                Stream binStream = assemblyWithSpriteResource.GetManifestResourceStream(path);
                 MemoryStream mStream = new MemoryStream();
                 binStream.CopyTo(mStream);
 
