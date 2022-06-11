@@ -57,5 +57,8 @@
     <Compile Include="SRScene.cs" />
     <Compile Include="UnityUtil.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="libs\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

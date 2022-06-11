@@ -10,4 +10,4 @@ set OUTPUT_DIR=".\build\%MOD_NAME%_v%BUILT_VERSION%"
 mkdir %OUTPUT_DIR%
 
 copy %MAIN_DLL% %OUTPUT_DIR%
-copy %LIB_DLL_DIR%\* %OUTPUT_DIR%
+REM copy %LIB_DLL_DIR%\* %OUTPUT_DIR%
