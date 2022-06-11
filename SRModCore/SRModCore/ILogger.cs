@@ -10,5 +10,6 @@ namespace SRModCore
     {
         void Msg(string message);
         void Error(string message);
+        void Error(string message, Exception e);
     }
 }

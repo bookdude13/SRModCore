@@ -48,7 +48,7 @@ namespace SRModCore
          * Prints out the game object tree/hierarchy below the given root object to the logs.
          * Useful for finding objects to clone/instantiate :)
          */
-        public static void LogGameObjectHierarchy(MelonLogger.Instance logger, Transform root, int indentLevel = 0)
+        public static void LogGameObjectHierarchy(ILogger logger, Transform root, int indentLevel = 0)
         {
             if (root == null)
             {
@@ -95,7 +95,7 @@ namespace SRModCore
          * Prints out the components attached to the given game object and all children.
          * Useful for describing objects to clone/instantiate
          */
-        public static void LogComponentsRecursive(MelonLogger.Instance logger, Transform root, string tabs = "")
+        public static void LogComponentsRecursive(ILogger logger, Transform root, string tabs = "")
         {
             if (root == null)
             {
@@ -165,7 +165,7 @@ namespace SRModCore
         /// </summary>
         /// <param name="parent">Parent of deleted children</param>
         /// <param name="whitelistedNames">GameObject names of immediate children to not delete. If null, all are deleted.</param>
-        public static void DeleteChildren(MelonLogger.Instance logger, Transform parent, string[] whitelistedNames = null)
+        public static void DeleteChildren(ILogger logger, Transform parent, string[] whitelistedNames = null)
         {
             if (parent == null)
             {
@@ -205,7 +205,7 @@ namespace SRModCore
             }
         }
 
-        public static Sprite CreateSpriteFromAssemblyResource(MelonLogger.Instance logger, string path)
+        public static Sprite CreateSpriteFromAssemblyResource(ILogger logger, string path)
         {
             try
             {

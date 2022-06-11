@@ -25,5 +25,10 @@ namespace SRModCore
         {
             melonLogger.Error(message);
         }
+        public void Error(string message, Exception e)
+        {
+            melonLogger.Error(message, e);
+        }
+
     }
 }
