@@ -11,8 +11,11 @@ namespace SRModCore
         private static readonly string SCENE_NAME_GAME_START = "GameStart";
         private static readonly string SCENE_NAME_WARNING = "0.AWarning";
         private static readonly string SCENE_NAME_GAME_END = "3.GameEnd";
+        private static readonly string SCENE_NAME_CUSTOM_STAGES= "CustomStages";
+        private static readonly string SCENE_NAME_EXPERIENCE= "Experience Scene";
 
         //TODO experience?
+        //TODO multiplayer scenes?
         public enum SRSceneType
         {
             GAME_START,
@@ -22,7 +25,9 @@ namespace SRModCore
             SPIN_STAGE,
             SPIRAL_STAGE,
             GAME_END,
-            OTHER
+            OTHER,
+            CUSTOM_STAGE,
+            EXPERIENCE_STAGE
         }
 
         public string SceneName { get; private set; }
@@ -36,7 +41,11 @@ namespace SRModCore
 
         public bool IsStage()
         {
-            return SceneType == SRSceneType.NORMAL_STAGE || SceneType == SRSceneType.SPIN_STAGE || SceneType == SRSceneType.SPIRAL_STAGE;
+            return SceneType == SRSceneType.NORMAL_STAGE
+                || SceneType == SRSceneType.SPIN_STAGE
+                || SceneType == SRSceneType.SPIRAL_STAGE
+                || SceneType == SRSceneType.CUSTOM_STAGE
+                || SceneType == SRSceneType.EXPERIENCE_STAGE;
         }
 
         private SRSceneType GetSceneType(string sceneName)
@@ -93,9 +102,19 @@ namespace SRModCore
                 return SRSceneType.SPIRAL_STAGE;
             }
 
+            if (sceneName == SCENE_NAME_CUSTOM_STAGES)
+            {
+                return SRSceneType.CUSTOM_STAGE;
+            }
+
             if (sceneName == SCENE_NAME_GAME_END)
             {
                 return SRSceneType.GAME_END;
+            }
+
+            if (sceneName.Contains(SCENE_NAME_EXPERIENCE))
+            {
+                return SRSceneType.EXPERIENCE_STAGE;
             }
 
             return SRSceneType.OTHER;
