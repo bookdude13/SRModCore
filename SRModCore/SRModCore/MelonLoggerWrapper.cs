@@ -19,6 +19,14 @@ namespace SRModCore
             this.isDebug = isDebug;
         }
 
+        public MelonLoggerWrapper(MelonLogger.Instance melonLogger)
+        {
+            this.melonLogger = melonLogger;
+#if DEBUG
+            this.isDebug = true;
+#endif
+        }
+
         public void Msg(string message)
         {
             melonLogger.Msg(message);
