@@ -31,8 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SynthRiders\SynthRiders_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="MelonLoader">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SynthRiders\MelonLoader\MelonLoader.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SynthRiders\MelonLoader\net6\MelonLoader.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -50,11 +53,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IStageEvents.cs" />
     <Compile Include="SRLogger.cs" />
     <Compile Include="MainMod.cs" />
     <Compile Include="MelonLoggerWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SRScene.cs" />
+    <Compile Include="StageEventHandler.cs" />
     <Compile Include="UnityUtil.cs" />
   </ItemGroup>
   <ItemGroup>

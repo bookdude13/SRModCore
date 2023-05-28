@@ -9,17 +9,22 @@ namespace SRModCore
 {
     public class MelonLoggerWrapper : SRLogger
     {
-#if DEBUG
-        private readonly bool isDebug = true;
-#else
         private readonly bool isDebug = false;
-#endif
 
         private readonly MelonLogger.Instance melonLogger;
+
+        public MelonLoggerWrapper(MelonLogger.Instance melonLogger, bool isDebug = false)
+        {
+            this.melonLogger = melonLogger;
+            this.isDebug = isDebug;
+        }
 
         public MelonLoggerWrapper(MelonLogger.Instance melonLogger)
         {
             this.melonLogger = melonLogger;
+#if DEBUG
+            this.isDebug = true;
+#endif
         }
 
         public void Msg(string message)
