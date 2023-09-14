@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SRModCore
 {
+    [RegisterTypeInIl2Cpp]
     public class MelonLoggerWrapper : SRLogger
     {
         private readonly bool isDebug = false;
