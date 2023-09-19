@@ -9,6 +9,7 @@ using Il2Cppcom.Kluge.XR.Utils;
 using Il2CppInterop.Runtime;
 using MelonLoader;
 using UnityEngine;
+using static Il2CppRootMotion.FinalIK.RagdollUtility;
 
 namespace SRModCore
 {
@@ -176,8 +177,9 @@ namespace SRModCore
                 return;
             }
 
-            foreach (Transform child in parent)
+            for (int i = 0; i < parent.childCount; i++)
             {
+                var child = parent.GetChild(i);
                 // Don't delete whitelisted or anything created by this mod
                 if (whitelistedNames == null || (!whitelistedNames.Contains(child.name) && !child.name.StartsWith("pm_")))
                 {
