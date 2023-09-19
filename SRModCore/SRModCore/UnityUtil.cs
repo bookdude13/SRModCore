@@ -16,6 +16,20 @@ namespace SRModCore
     public class UnityUtil
     {
         /// <summary>
+        /// Finds the root transforms in the current Unity scene and logs out their names.
+        /// Useful for finding a root to start logging hierarchies with when nothing is known.
+        /// </summary>
+        /// <param name="logger"></param>
+        public static void LogRootTransformsInScene(SRLogger logger)
+        {
+            var roots = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
+            foreach (var root in roots)
+            {
+                logger.Msg($"Root '{root.name}'");
+            }
+        }
+
+        /// <summary>
         /// Retrieve the root(most parent) transform from the given transform.
         /// </summary>
         /// <param name="transform">Starting Transform in the hierarchy</param>
@@ -202,8 +216,9 @@ namespace SRModCore
                 return;
             }
 
-            foreach (Transform child in parent)
+            for (int i = 0; i < parent.childCount; i++)
             {
+                var child = parent.GetChild(i);
                 if (excludedNames == null || !excludedNames.Contains(child.name))
                 {
                     child.gameObject.SetActive(active);
