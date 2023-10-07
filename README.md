@@ -8,8 +8,6 @@ Core shared functions to make modding Synth Riders easier
 - Make sure the branch you want is checked out
 - Add the SRModCore .csproj file to your solution
 - Add a project reference to SRModCore from your mod's project
-- Include the built SRModCore.dll with your mod's release, or manage the dependency in some other way
-  - It should be in the project's build output by default if your project reference/project dependency is set from the above steps
 
 For building (see SRVoting as an example):
 - Copy the build_and_copy_dev.bat, build_tag_release.bat and build_files.txt files from SRModCore and put them in your project's root directory
@@ -22,6 +20,7 @@ For building (see SRVoting as an example):
 - For build_files.txt:
   - Each line should be the files included in your mod zip/synthmod packages
   - Include any dependencies (like `SRModCore.dll`) here as well
+  - Usually you'll start with `SRModCore.dll` and `<mod name>.dll`
   - Paths are relative to the input directory given to build.py (default `./<ModName>/bin/<Configuration>/net6.0/publish`)
 
 ### Method 2 - Download + reference
