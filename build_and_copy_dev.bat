@@ -1,10 +1,11 @@
 @echo off
 
 set MOD_NAME="SRModCore"
+set BUILD_SCRIPT=.\build.py
 set SYNTHRIDERS_MODS_DIR="C:\Program Files (x86)\Steam\steamapps\common\SynthRiders\Mods"
 
 echo "Building dev configuration"
-python.exe build.py --clean -n "%MOD_NAME%" -c Debug -o build\localdev localdev build_files.txt || goto :ERROR
+python.exe %BUILD_SCRIPT% --clean -n %MOD_NAME% -c Debug -o build\localdev localdev build_files.txt || goto :ERROR
 
 echo "Copying to SR directory..."
 @REM Building spits out raw file structure in build/localdev/raw
