@@ -66,6 +66,29 @@ def create_synthmod(mod_name, input_dir, input_subpaths, output_dir, output_name
     return True
 
 
+def copy_with_dir_create(input_dir, input_file, output_dir):
+    full_path = Path(input_dir, input_file)
+    output_path = Path(output_dir, input_file)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Copying {full_path} to {output_path}")
+    shutil.copyfile(full_path, output_path)
+
+
+def copy_raw(mod_name, input_dir, input_subpaths, output_dir):
+    mod_name = str(mod_name)
+
+    for subpath in input_subpaths:
+        copy_with_dir_create(input_dir, subpath, output_dir)
+
+    # Include dependencies as well (single level)
+    dep_dir = Path(input_dir, "libs")
+    if dep_dir.exists():
+        for dep_file in dep_dir.iterdir():
+            copy_with_dir_create(input_dir, dep_file, output_dir)
+
+    return True
+
+
 def add_files_to_zip(zip_file, input_dir, input_subpaths, zip_dir = "Mods"):
     for input_file in input_subpaths:
         add_file_to_zip(zip_file, input_dir, input_file, zip_dir)
@@ -137,8 +160,8 @@ def clean_output(output_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog='build_release.py',
-        description='Helper functions for building release files (synthmod, zip)')
+        prog='build.py',
+        description='Helper functions for building dev and release files (synthmod, zip)')
     parser.add_argument(
         "version",
         help="Mod version being built. Ex. 1.3.0"
@@ -200,6 +223,7 @@ if __name__ == "__main__":
         lambda: clean_output(output_dir) if args.clean else True,
         lambda: dotnet_clean(),
         lambda: dotnet_build(configuration),
+        lambda: copy_raw(mod_name, input_dir, main_dlls, Path(output_dir, "raw")),
         lambda: create_zip(mod_name, input_dir, main_dlls, output_dir, zip_output_file),
         lambda: create_synthmod(mod_name, input_dir, main_dlls, output_dir, synthmod_output_file),
         lambda: add_git_tag(mod_name, version) if args.tag else True,
