@@ -172,6 +172,11 @@ if __name__ == "__main__":
         help="Mod version being built. Ex. 1.3.0"
     )
     parser.add_argument(
+        "input_file",
+        type=Path,
+        help="File containing list of file names to include in copy/zip/synthmod, one per line, relative from the input directory"
+    )
+    parser.add_argument(
         "-n",
         "--name",
         help="Mod name. Defaults to current directory name."
@@ -192,7 +197,7 @@ if __name__ == "__main__":
         "-i",
         "--input-dir",
         type=Path,
-        help="Input directory (build directory). Defaults to <ModName>/bin/<Configuration>/net6.0"
+        help="Input directory (build directory). Defaults to <ModName>/bin/<Configuration>/net6.0/publish"
     )
     parser.add_argument(
         "--tag",
@@ -218,22 +223,20 @@ if __name__ == "__main__":
 
     input_dir = args.input_dir
     if not input_dir:
-        input_dir = Path(".", mod_name, "bin", configuration, "net6.0").resolve()
+        input_dir = Path(".", mod_name, "bin", configuration, "net6.0", "publish").resolve()
         print(f"Input dir not specified; using '{input_dir}'")
 
     output_dir = args.output_dir
     if not output_dir:
         output_dir = Path("build", f"{mod_name}_{version}")
         print(f"Output dir not specified; using {output_dir}")
+    
+    input_file_definitions = args.input_file
+    input_files = [line.rstrip() for line in open(input_file_definitions, "r")]
 
     # Always build the whole solution to resolve dependencies correctly
     # This can become a parameter if it ever differs
     solution_file = f"{mod_name}.sln"
-
-    # TODO provide these with separate file?
-    main_dlls = [
-        f"{mod_name}.dll",
-    ]
 
     zip_output_file = f"{mod_name}_{version}.zip"
     synthmod_output_file = f"{mod_name}_{version}.synthmod"
@@ -242,9 +245,9 @@ if __name__ == "__main__":
         lambda: clean_output(output_dir) if args.clean else True,
         lambda: dotnet_clean(),
         lambda: dotnet_publish_solution(solution_file, configuration),
-        lambda: copy_raw(mod_name, input_dir, main_dlls, Path(output_dir, "Mods")),
-        lambda: create_zip(mod_name, input_dir, main_dlls, output_dir, zip_output_file),
-        lambda: create_synthmod(mod_name, input_dir, main_dlls, output_dir, synthmod_output_file),
+        lambda: copy_raw(mod_name, input_dir, input_files, Path(output_dir, "Mods")),
+        lambda: create_zip(mod_name, input_dir, input_files, output_dir, zip_output_file),
+        lambda: create_synthmod(mod_name, input_dir, input_files, output_dir, synthmod_output_file),
         lambda: add_git_tag(mod_name, version) if args.tag else True,
     ]
 
