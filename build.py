@@ -18,6 +18,11 @@ def dotnet_build(configuration):
     return result.returncode == 0
 
 
+def dotnet_publish_solution(solution_file, configuration):
+    result = subprocess.run(["dotnet", "publish", solution_file, "-c", configuration])
+    return result.returncode == 0
+
+
 def create_localitem_json(output_dir):
     local_item_contents = {
         "hash": mod_name
@@ -172,6 +177,12 @@ if __name__ == "__main__":
         help="Mod name. Defaults to current directory name."
     )
     parser.add_argument(
+        "-c",
+        "--configuration",
+        default="Release",
+        help="Build configuration, Debug or Release. Defaults to Release"
+    )
+    parser.add_argument(
         "-o",
         "--output-dir",
         type=Path,
@@ -196,22 +207,30 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
-    configuration = "Release"
+    configuration = args.configuration
 
     version = str(args.version)
+
     mod_name = args.name
     if not mod_name:
         mod_name = Path(".").resolve().stem
         print(f"Mod name not specified; using '{mod_name}'")
+
     input_dir = args.input_dir
     if not input_dir:
         input_dir = Path(".", mod_name, "bin", configuration, "net6.0").resolve()
         print(f"Input dir not specified; using '{input_dir}'")
+
     output_dir = args.output_dir
     if not output_dir:
         output_dir = Path("build", f"{mod_name}_{version}")
         print(f"Output dir not specified; using {output_dir}")
 
+    # Always build the whole solution to resolve dependencies correctly
+    # This can become a parameter if it ever differs
+    solution_file = f"{mod_name}.sln"
+
+    # TODO provide these with separate file?
     main_dlls = [
         f"{mod_name}.dll",
     ]
@@ -222,8 +241,8 @@ if __name__ == "__main__":
     commands = [
         lambda: clean_output(output_dir) if args.clean else True,
         lambda: dotnet_clean(),
-        lambda: dotnet_build(configuration),
-        lambda: copy_raw(mod_name, input_dir, main_dlls, Path(output_dir, "raw")),
+        lambda: dotnet_publish_solution(solution_file, configuration),
+        lambda: copy_raw(mod_name, input_dir, main_dlls, Path(output_dir, "Mods")),
         lambda: create_zip(mod_name, input_dir, main_dlls, output_dir, zip_output_file),
         lambda: create_synthmod(mod_name, input_dir, main_dlls, output_dir, synthmod_output_file),
         lambda: add_git_tag(mod_name, version) if args.tag else True,
