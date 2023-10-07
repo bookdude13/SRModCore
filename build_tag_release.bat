@@ -3,10 +3,11 @@
 IF %1.==. goto :Usage
 
 set MOD_NAME="SRModCore"
+set BUILD_SCRIPT=.\build.py
 set VERSION=%1
 
 echo "Building release..."
-python.exe build.py --clean --tag -n "%MOD_NAME%" -c Release %VERSION% build_files.txt || goto :ERROR
+python.exe %BUILD_SCRIPT% --clean --tag -n "%MOD_NAME%" -c Release %VERSION% build_files.txt || goto :ERROR
 
 echo "Done"
 goto :EOF

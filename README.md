@@ -15,6 +15,7 @@ For building (see SRVoting as an example):
 - Copy the build_and_copy_dev.bat, build_tag_release.bat and build_files.txt files from SRModCore and put them in your project's root directory
 - For build_tag_release.bat:
   - Update `MOD_NAME` to be the name of your mod
+  - Update `BUILD_SCRIPT` to point to the build.py file (it probably should be `SRModCore\build.py`)
 - For build_and_copy_dev.bat:
   - Update `MOD_NAME` to be the name of your mod
   - Update `BUILD_SCRIPT` to point to the build.py file (it probably should be `SRModCore\build.py`)

@@ -8,13 +8,8 @@ from pathlib import Path
 from zipfile import ZipFile
 
 
-def dotnet_clean():
-    result = subprocess.run(["dotnet", "clean"])
-    return result.returncode == 0
-
-
-def dotnet_build(configuration):
-    result = subprocess.run(["dotnet", "build", "-c", configuration])
+def dotnet_clean(solution_file, configuration):
+    result = subprocess.run(["dotnet", "clean", solution_file, "-c", configuration])
     return result.returncode == 0
 
 
@@ -235,16 +230,20 @@ if __name__ == "__main__":
     input_files = [line.rstrip() for line in open(input_file_definitions, "r")]
 
     # Always build the whole solution to resolve dependencies correctly
-    # This can become a parameter if it ever differs
-    solution_file = f"{mod_name}.sln"
+    # This can become a parameter if it ever differs.
+    # Try both the current directory and one directory lower (should be the common configurations)
+    solution_file = Path(f"{mod_name}.sln")
+    if not solution_file.exists():
+        solution_file = Path(mod_name, f"{mod_name}.sln")
+    print("Using solution file", solution_file.resolve())
 
     zip_output_file = f"{mod_name}_{version}.zip"
     synthmod_output_file = f"{mod_name}_{version}.synthmod"
 
     commands = [
         lambda: clean_output(output_dir) if args.clean else True,
-        lambda: dotnet_clean(),
-        lambda: dotnet_publish_solution(solution_file, configuration),
+        lambda: dotnet_clean(solution_file.resolve(), configuration),
+        lambda: dotnet_publish_solution(solution_file.resolve(), configuration),
         lambda: copy_raw(mod_name, input_dir, input_files, Path(output_dir, "Mods")),
         lambda: create_zip(mod_name, input_dir, input_files, output_dir, zip_output_file),
         lambda: create_synthmod(mod_name, input_dir, input_files, output_dir, synthmod_output_file),
@@ -254,6 +253,6 @@ if __name__ == "__main__":
     for cmd in commands:
         if not cmd():
             print("Error, stopping")
-            break
+            exit(-1)
         print()
 
