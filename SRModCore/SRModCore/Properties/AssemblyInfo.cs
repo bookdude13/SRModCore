@@ -37,4 +37,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.1.0.0")]
 
 [assembly: MelonInfo(typeof(SRModCore.MainMod), "SR Mod Core", "1.1.0", "bookdude13", "https://github.com/bookdude13/SRModCore")]
+#if QUEST
+[assembly: MelonGame("kluge", "SynthRiders")]
+#else
 [assembly: MelonGame("Kluge Interactive", "SynthRiders")]
+#endif
