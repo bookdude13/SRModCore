@@ -14,4 +14,8 @@ using System.Runtime.InteropServices;
 [assembly: Guid("abcb1a59-660e-41b7-bcd8-f7f3ce0e45b5")]
 
 [assembly: MelonInfo(typeof(SRModCore.MainMod), "SR Mod Core", "2.0.0", "bookdude13", "https://github.com/bookdude13/SRModCore")]
+#if QUEST
+[assembly: MelonGame("kluge", "SynthRiders")]
+#else
 [assembly: MelonGame("Kluge Interactive", "SynthRiders")]
+#endif
