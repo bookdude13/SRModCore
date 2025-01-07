@@ -5,13 +5,30 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Il2Cppcom.Kluge.XR.Utils;
+using Il2CppInterop.Runtime;
 using MelonLoader;
 using UnityEngine;
+using static Il2CppRootMotion.FinalIK.RagdollUtility;
 
 namespace SRModCore
 {
     public class UnityUtil
     {
+        /// <summary>
+        /// Finds the root transforms in the current Unity scene and logs out their names.
+        /// Useful for finding a root to start logging hierarchies with when nothing is known.
+        /// </summary>
+        /// <param name="logger"></param>
+        public static void LogRootTransformsInScene(SRLogger logger)
+        {
+            var roots = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
+            foreach (var root in roots)
+            {
+                logger.Msg($"Root '{root.name}'");
+            }
+        }
+
         /// <summary>
         /// Retrieve the root(most parent) transform from the given transform.
         /// </summary>
@@ -113,32 +130,34 @@ namespace SRModCore
             tabs += "\t";
             foreach (Component component in root.GetComponents<Component>())
             {
-                Type type = component.GetType();
-                if (type == typeof(SpriteRenderer))
+                var il2cppType = component.GetIl2CppType();
+                if (il2cppType == Il2CppType.Of<SpriteRenderer>(component))
                 {
+                    var asSpriteRenderer = component.Cast<SpriteRenderer>();
                     logger.Msg(string.Format(
                         "{0}{1} ({2}). Sprite: {3}, Color: {4}, Size: {5}",
                         tabs,
                         component.name,
-                        component.GetType(),
-                        ((SpriteRenderer) component).sprite,
-                        ((SpriteRenderer)component).color,
-                        ((SpriteRenderer)component).size
+                        il2cppType.FullName,
+                        asSpriteRenderer.sprite,
+                        asSpriteRenderer.color,
+                        asSpriteRenderer.size
                     ));
                 }
-                else if (type == typeof(RectTransform))
+                else if (il2cppType == Il2CppType.Of<RectTransform>(component))
                 {
+                    var asRect = component.Cast<RectTransform>();
                     logger.Msg(string.Format(
                         "{0}{1} ({2}). Rect: {3}, anchor min {4}, max {5}, scale: {6}, local scale: {7}, sizeDelta: {8}",
                         tabs,
                         component.name,
-                        component.GetType(),
-                        ((RectTransform)component).rect,
-                        ((RectTransform)component).anchorMin,
-                        ((RectTransform)component).anchorMax,
+                        il2cppType.FullName,
+                        asRect.rect,
+                        asRect.anchorMin,
+                        asRect.anchorMax,
                         component.transform.localScale,
-                        ((RectTransform)component).localScale,
-                        ((RectTransform)component).sizeDelta
+                        asRect.localScale,
+                        asRect.sizeDelta
                     ));
                 }
                 else
@@ -147,7 +166,7 @@ namespace SRModCore
                         "{0}{1} ({2})",
                         tabs,
                         component.name,
-                        component.GetType()
+                        il2cppType.FullName
                     ));
                 }
             }
@@ -172,8 +191,9 @@ namespace SRModCore
                 return;
             }
 
-            foreach (Transform child in parent)
+            for (int i = 0; i < parent.childCount; i++)
             {
+                var child = parent.GetChild(i);
                 // Don't delete whitelisted or anything created by this mod
                 if (whitelistedNames == null || (!whitelistedNames.Contains(child.name) && !child.name.StartsWith("pm_")))
                 {
@@ -196,8 +216,9 @@ namespace SRModCore
                 return;
             }
 
-            foreach (Transform child in parent)
+            for (int i = 0; i < parent.childCount; i++)
             {
+                var child = parent.GetChild(i);
                 if (excludedNames == null || !excludedNames.Contains(child.name))
                 {
                     child.gameObject.SetActive(active);

@@ -1,10 +1,12 @@
-﻿using Synth.Utils;
+﻿using Il2Cpp;
+using Il2CppSynth.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.Events;
+using HarmonyLib;
 
 namespace SRModCore
 {
@@ -13,6 +15,7 @@ namespace SRModCore
         private readonly SRLogger logger;
         private readonly IStageEvents listener;
         private readonly StageEvents stageEvents;
+
 
         public StageEventHandler(SRLogger logger, IStageEvents eventListener)
         {
@@ -35,13 +38,13 @@ namespace SRModCore
         {
             if (stageEvents != null)
             {
-                stageEvents.OnSongStart.RemoveListener(listener.OnSongStart);
-                stageEvents.OnSongEnd.RemoveListener(listener.OnSongEnd);
-                stageEvents.OnNoteHit.RemoveListener(listener.OnNoteHit);
-                stageEvents.OnNoteFail.RemoveListener(listener.OnNoteFail);
-                stageEvents.OnEnterSpecial.RemoveListener(listener.OnEnterSpecial);
-                stageEvents.OnCompleteSpecial.RemoveListener(listener.OnCompleteSpecial);
-                stageEvents.OnFailSpecial.RemoveListener(listener.OnFailSpecial);
+                stageEvents.OnSongStart.RemoveListener((UnityAction)listener.OnSongStart);
+                stageEvents.OnSongEnd.RemoveListener((UnityAction)listener.OnSongEnd);
+                stageEvents.OnNoteHit.RemoveListener((UnityAction)listener.OnNoteHit);
+                stageEvents.OnNoteFail.RemoveListener((UnityAction)listener.OnNoteFail);
+                stageEvents.OnEnterSpecial.RemoveListener((UnityAction)listener.OnEnterSpecial);
+                stageEvents.OnCompleteSpecial.RemoveListener((UnityAction)listener.OnCompleteSpecial);
+                stageEvents.OnFailSpecial.RemoveListener((UnityAction)listener.OnFailSpecial);
             }
         }
 
@@ -49,13 +52,13 @@ namespace SRModCore
         {
             if (stageEvents != null)
             {
-                stageEvents.OnSongStart.AddListener(listener.OnSongStart);
-                stageEvents.OnSongEnd.AddListener(listener.OnSongEnd);
-                stageEvents.OnNoteHit.AddListener(listener.OnNoteHit);
-                stageEvents.OnNoteFail.AddListener(listener.OnNoteFail);
-                stageEvents.OnEnterSpecial.AddListener(listener.OnEnterSpecial);
-                stageEvents.OnCompleteSpecial.AddListener(listener.OnCompleteSpecial);
-                stageEvents.OnFailSpecial.AddListener(listener.OnFailSpecial);
+                stageEvents.OnSongStart.AddListener((UnityAction)listener.OnSongStart);
+                stageEvents.OnSongEnd.AddListener((UnityAction)listener.OnSongEnd);
+                stageEvents.OnNoteHit.AddListener((UnityAction)listener.OnNoteHit);
+                stageEvents.OnNoteFail.AddListener((UnityAction)listener.OnNoteFail);
+                stageEvents.OnEnterSpecial.AddListener((UnityAction)listener.OnEnterSpecial);
+                stageEvents.OnCompleteSpecial.AddListener((UnityAction)listener.OnCompleteSpecial);
+                stageEvents.OnFailSpecial.AddListener((UnityAction)listener.OnFailSpecial);
             }
         }
 
