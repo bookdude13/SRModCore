@@ -14,13 +14,13 @@ namespace SRModCore
         {
             // Check if we're running on Android
             var androidPath = "/sdcard/SynthRidersUC";
-            if (Directory.Exists(androidPath))
+            if (Environment.OSVersion.Platform == PlatformID.Unix && Directory.Exists(androidPath))
             {
                 return androidPath;
             }
 
             // Fallback on relative to game directory
-            var pcPath = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+            var pcPath = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "SynthRidersUC"));
             return pcPath;
         }
     }
