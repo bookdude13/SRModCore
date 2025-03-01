@@ -7,7 +7,7 @@ set BUILD_SCRIPT=.\build.py
 set VERSION=%1
 
 echo "Building release..."
-python.exe %BUILD_SCRIPT% --clean --tag -n "%MOD_NAME%" -c Release %VERSION% build_files.txt || goto :ERROR
+python.exe %BUILD_SCRIPT% --clean --tag -n "%MOD_NAME%" --dotnet-version=net8.0 -c Release %VERSION% build_files.txt || goto :ERROR
 
 echo "Done"
 goto :EOF
