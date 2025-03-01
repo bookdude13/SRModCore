@@ -13,8 +13,8 @@ def dotnet_clean(solution_file, configuration):
     return result.returncode == 0
 
 
-def dotnet_publish_solution(solution_file, configuration):
-    result = subprocess.run(["dotnet", "publish", solution_file, "-c", configuration])
+def dotnet_publish_solution(solution_file, configuration, framework):
+    result = subprocess.run(["dotnet", "publish", solution_file, "-c", configuration, "-f", framework])
     return result.returncode == 0
 
 
@@ -253,7 +253,7 @@ if __name__ == "__main__":
     commands = [
         lambda: clean_output(output_dir) if args.clean else True,
         lambda: dotnet_clean(solution_file.resolve(), configuration),
-        lambda: dotnet_publish_solution(solution_file.resolve(), configuration),
+        lambda: dotnet_publish_solution(solution_file.resolve(), configuration, dotnet_version),
         lambda: copy_raw(mod_name, input_dir, input_files, Path(output_dir, "Mods")),
         lambda: create_zip(mod_name, input_dir, input_files, output_dir, zip_output_file),
         lambda: create_synthmod(mod_name, input_dir, input_files, output_dir, synthmod_output_file),
