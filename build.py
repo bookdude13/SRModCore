@@ -172,6 +172,11 @@ if __name__ == "__main__":
         help="File containing list of file names to include in copy/zip/synthmod, one per line, relative from the input directory"
     )
     parser.add_argument(
+        "--dotnet-version",
+        default="net6.0",
+        help="Dotnet version to use. Expecting 'net6.0' or 'net8.0'"
+    )
+    parser.add_argument(
         "-n",
         "--name",
         help="Mod name. Defaults to current directory name."
@@ -192,7 +197,7 @@ if __name__ == "__main__":
         "-i",
         "--input-dir",
         type=Path,
-        help="Input directory (build directory). Defaults to <ModName>/bin/<Configuration>/net6.0/publish"
+        help="Input directory (build directory). Defaults to <ModName>/bin/<Configuration>/<dotnet_version>/publish"
     )
     parser.add_argument(
         "--tag",
@@ -210,6 +215,11 @@ if __name__ == "__main__":
     configuration = args.configuration
 
     version = str(args.version)
+    
+    dotnet_version = args.dotnet_version
+    if not dotnet_version:
+        dotnet_version = "net6.0"
+    print(dotnet_version)
 
     mod_name = args.name
     if not mod_name:
@@ -218,7 +228,7 @@ if __name__ == "__main__":
 
     input_dir = args.input_dir
     if not input_dir:
-        input_dir = Path(".", mod_name, "bin", configuration, "net6.0", "publish").resolve()
+        input_dir = Path(".", mod_name, "bin", configuration, args.dotnet_version, "publish").resolve()
         print(f"Input dir not specified; using '{input_dir}'")
 
     output_dir = args.output_dir
