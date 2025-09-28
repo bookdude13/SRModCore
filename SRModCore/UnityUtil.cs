@@ -245,5 +245,68 @@ namespace SRModCore
                 return null;
             }
         }
+
+        /// <summary>
+        /// Tries to get a component from a game object. Logs context if it doesn't exist
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static T? ValidatedGetComponent<T>(SRLogger logger, GameObject? obj) where T : Component
+        {
+            if (obj == null)
+            {
+                logger.Error("Can't find component, obj is null");
+                return default;
+            }
+
+            if (obj.TryGetComponent<T>(out T component))
+            {
+                return component;
+            }
+
+            // Not found - give more context to find it easily
+            logger.Error("Component not found on object with type: " + typeof(T));
+            LogComponentsRecursive(logger, obj.transform);
+            return default;
+        }
+
+        /// <summary>
+        /// Finds a child game object by path, piece by piece, logging if any piece is null w/ more context
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static Transform ValidatedFind(SRLogger logger, Transform? parent, string path, bool verbose = false)
+        {
+            var pathPieces = path.Contains('/') ? path.Split('/') : new string[] { path };
+            Transform? current = parent;
+
+            if (current == null)
+            {
+                logger.Debug("Parent started null!");
+                return null!;
+            }
+
+            foreach (var pathPiece in pathPieces)
+            {
+                var next = current.Find(pathPiece);
+                if (verbose)
+                {
+                    logger.Debug($"Path piece is {pathPiece}, is this null? {next == null}");
+                }
+
+                if (next == null)
+                {
+                    logger.Error($"Path piece is null: {pathPiece}");
+                    LogGameObjectHierarchy(logger, current, 1);
+                    return null!;
+                }
+
+                current = next;
+            }
+
+            return current!;
+        }
     }
 }
