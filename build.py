@@ -30,7 +30,7 @@ def create_localitem_json(output_dir):
     return local_item_path
 
 
-def create_synthmod(mod_name, input_dir, input_subpaths, output_dir, output_name):
+def create_synthmod(mod_name, input_dir, input_subpaths, output_dir, output_name, subfolder = "Mods"):
     mod_name = str(mod_name)
 
     tmpdir = tempfile.mkdtemp()
@@ -50,7 +50,7 @@ def create_synthmod(mod_name, input_dir, input_subpaths, output_dir, output_name
         print(f"Adding {localitem_path} to LocalItem.json")
         zip_file.write(localitem_path, "LocalItem.json")
 
-        add_files_to_zip(zip_file, input_dir, input_subpaths, "Mods")
+        add_files_to_zip(zip_file, input_dir, input_subpaths, subfolder)
 
     if not tmp_output_path.exists():
         print(f"Failed to create zip file {tmp_output_path}")
@@ -67,8 +67,17 @@ def create_synthmod(mod_name, input_dir, input_subpaths, output_dir, output_name
 
 
 def copy_with_dir_create(input_dir, input_file, output_dir):
+    # Optionally, the input_file from the passed in mod/plugin file list may be comma-delimited,
+    # with the first entry being the source name, and the second entry being the path in the zip/synthmod.
+
+    if ',' in input_file:
+        parts = input_file.split(',')
+        input_file = parts[0]
+        output_path = Path(output_dir, parts[1])
+    else:
+        output_path = Path(output_dir, "Mods", input_file)
+
     full_path = Path(input_dir, input_file)
-    output_path = Path(output_dir, input_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     print(f"Copying {full_path} to {output_path}")
     shutil.copyfile(full_path, output_path)
@@ -95,13 +104,23 @@ def add_files_to_zip(zip_file, input_dir, input_subpaths, zip_dir = "Mods"):
 
 
 def add_file_to_zip(zip_file, input_dir, input_file, zip_dir = "Mods"):
-    real_path = Path(input_dir, input_file)
+    # Optionally, the input_file from the passed in mod/plugin file list may be comma-delimited,
+    # with the first entry being the source name, and the second entry being the path in the zip/synthmod.
+
     zip_path = Path(zip_dir, input_file)
+
+    if ',' in input_file:
+        parts = input_file.split(',')
+        input_file = parts[0]
+        zip_path = parts[1]
+
+    print(input_dir, input_file, zip_dir)
+    real_path = Path(input_dir, input_file)
     print(f"Adding {real_path} to {zip_path}")
     zip_file.write(real_path, zip_path)
 
 
-def create_zip(mod_name, input_dir, input_subpaths, output_dir, output_name):
+def create_zip(mod_name, input_dir, input_subpaths, output_dir, output_name, subfolder = "Mods"):
     mod_name = str(mod_name)
 
     tmpdir = tempfile.mkdtemp()
@@ -115,13 +134,13 @@ def create_zip(mod_name, input_dir, input_subpaths, output_dir, output_name):
     tmp_output_path = Path(tmp_outputdir, output_name)
     print(f"Creating zip file {tmp_output_path}")
     with ZipFile(tmp_output_path, "w") as zip_file:
-        add_files_to_zip(zip_file, input_dir, input_subpaths, "Mods")
+        add_files_to_zip(zip_file, input_dir, input_subpaths, subfolder)
 
         # Include dependencies as well (single level)
         dep_dir = Path(input_dir, "libs")
         if dep_dir.exists():
             for dep_file in dep_dir.iterdir():
-                add_file_to_zip(zip_file, dep_dir, dep_file.name, "Mods")
+                add_file_to_zip(zip_file, dep_dir, dep_file.name, subfolder)
 
     if not tmp_output_path.exists():
         print(f"Failed to create zip file {tmp_output_path}")
@@ -209,6 +228,17 @@ if __name__ == "__main__":
         action="store_true",
         help="If specified, removes the output directory for this particular version before building"
     )
+    parser.add_argument(
+        "--plugin",
+        action="store_true",
+        help="If specified, this is a plugin and outputs should go to the Plugins folder instead of the Mods folder"
+    )
+    parser.add_argument(
+        "-s",
+        "--solution-file",
+        type=Path,
+        help="Path to solution file. Defaults to the mod's name in the current directory, falling back on mod_name/mod_name.sln"
+    )
     
     args = parser.parse_args()
 
@@ -242,9 +272,11 @@ if __name__ == "__main__":
     # Always build the whole solution to resolve dependencies correctly
     # This can become a parameter if it ever differs.
     # Try both the current directory and one directory lower (should be the common configurations)
-    solution_file = Path(f"{mod_name}.sln")
+    solution_file = Path(str(args.solution_file))
     if not solution_file.exists():
-        solution_file = Path(mod_name, f"{mod_name}.sln")
+        solution_file = Path(f"{mod_name}.sln")
+        if not solution_file.exists():
+            solution_file = Path(mod_name, f"{mod_name}.sln")
     print("Using solution file", solution_file.resolve())
 
     zip_output_file = f"{mod_name}_{version}.zip"
@@ -254,9 +286,9 @@ if __name__ == "__main__":
         lambda: clean_output(output_dir) if args.clean else True,
         lambda: dotnet_clean(solution_file.resolve(), configuration),
         lambda: dotnet_publish_solution(solution_file.resolve(), configuration, dotnet_version),
-        lambda: copy_raw(mod_name, input_dir, input_files, Path(output_dir, "Mods")),
-        lambda: create_zip(mod_name, input_dir, input_files, output_dir, zip_output_file),
-        lambda: create_synthmod(mod_name, input_dir, input_files, output_dir, synthmod_output_file),
+        lambda: copy_raw(mod_name, input_dir, input_files, output_dir),
+        lambda: create_zip(mod_name, input_dir, input_files, output_dir, zip_output_file, subfolder="Plugins" if args.plugin else "Mods"),
+        lambda: create_synthmod(mod_name, input_dir, input_files, output_dir, synthmod_output_file, subfolder="Plugins" if args.plugin else "Mods"),
         lambda: add_git_tag(mod_name, version) if args.tag else True,
     ]
 
