@@ -9,7 +9,6 @@ using Il2Cppcom.Kluge.XR.Utils;
 using Il2CppInterop.Runtime;
 using MelonLoader;
 using UnityEngine;
-using static Il2CppRootMotion.FinalIK.RagdollUtility;
 
 namespace SRModCore
 {
@@ -252,7 +251,7 @@ namespace SRModCore
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static T? ValidatedGetComponent<T>(SRLogger logger, GameObject? obj) where T : Component
+        public static T ValidatedGetComponent<T>(SRLogger logger, GameObject obj) where T : Component
         {
             if (obj == null)
             {
@@ -277,10 +276,10 @@ namespace SRModCore
         /// <param name="parent"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static Transform ValidatedFind(SRLogger logger, Transform? parent, string path, bool verbose = false)
+        public static Transform ValidatedFind(SRLogger logger, Transform parent, string path, bool verbose = false)
         {
             var pathPieces = path.Contains('/') ? path.Split('/') : new string[] { path };
-            Transform? current = parent;
+            Transform current = parent;
 
             if (current == null)
             {
